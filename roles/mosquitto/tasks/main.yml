@@ -1,0 +1,31 @@
+---
+- name: Install Mosquitto server
+  apt:
+    name:
+      - mosquitto
+    update_cache: true
+
+- name: Copy Mosquitto password file
+  template:
+    src: passwdfile.j2
+    dest: /etc/mosquitto/passwdfile
+    owner: root
+    group: root
+
+- name: Hash Mosquitto password file
+  command: mosquitto_passwd -U /etc/mosquitto/passwdfile
+
+- name: Delete default config file
+  file:
+    name: /etc/mosquitto/conf.d/default.conf
+    state: absent
+    
+- name: Copy Mosquitto configuration file
+  template:
+    src: homeautomation.j2
+    dest: /etc/mosquitto/conf.d/homeautomation.conf
+
+- name: Restart Mosquitto
+  systemd:
+    name: mosquitto.service
+    state: restarted

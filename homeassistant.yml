@@ -11,11 +11,12 @@
 #   - role: ssh-secure
 #   - role: dotfiles
 #   - role: unattended-upgrades
-   - role: homeassistant
-
+#   - role: homeassistant
+    - role: mosquitto
   vars:
     email: "{{ vault_dan_email }}"
     auto_reboot: false 
     auto_reboot_time: '04:30'
+    mosquitto_listen_port: 1883
 
 
