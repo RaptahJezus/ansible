@@ -1,0 +1,18 @@
+---
+- name: add mono apt key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+
+- name: add mono repository
+  apt_repository:
+    repo: deb https://download.mono-project.com/repo/debian stable-buster main
+    state: present
+
+- name: install mono
+  apt:
+    name: 
+      - mono-devel
+      - libmono-cil-dev
+    state: present
+    update_cache: true

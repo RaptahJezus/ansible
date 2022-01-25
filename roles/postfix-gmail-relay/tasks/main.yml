@@ -1,0 +1,41 @@
+---
+- name: Install mailutils & Postfix
+  apt:
+    pkg:
+      - postfix
+      - mailutils
+    state: latest
+    update_cache: true
+
+- name: Update Postfix Main Configuration File
+  template:
+    src: main.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart postfix
+  
+- name: Copy SASL Username/Password
+  template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl_passwd
+    owner: root
+    group: root
+    mode: 0600
+  when: postfix_relayhost != false
+  notify:
+    - postmap sasl_passwd
+    - restart postfix
+    
+- name: Copy cacert.pem
+  copy:
+#    src: cacert.pem
+    content: "{{ postfix_cacert_pem }}"
+    dest: /etc/postfix/cacert.pem
+    owner: root
+    group: root
+    mode: 0600
+  when: postfix_relayhost != false
+  notify:
+    - restart postfix

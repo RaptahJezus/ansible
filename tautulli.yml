@@ -1,0 +1,10 @@
+---
+- hosts: 'tautulli'
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  roles:
+    - role: postfix-gmail-relay
+    - role: ssh-secure
+    - role: tautulli
+

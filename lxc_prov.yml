@@ -1,0 +1,126 @@
+---
+- name: 'deploy cts'
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - passwd.yml
+
+  tasks:
+    - name: 'create containers'
+      proxmox:
+        vmid: "{{ hostvars[item]['vmid'] }}"
+        node: 'proxmox'
+        api_host: 192.168.10.5
+        api_user: "{{ vault_proxmox_api_user }}"
+        api_password: "{{ vault_proxmox_api_password }}"
+        password: "{{ vault_lxc_root_password }}"
+        hostname: "{{ item }}"
+        ostemplate: "{{ hostvars[item]['ostemplate'] }}"
+        storage: "{{ hostvars[item]['storage']|default('ZFS-vmstore') }}"
+        cores:  "{{ hostvars[item]['cores']|default(1) }}"
+        cpus: "{{ hostvars[item]['cores']|default(0) }}"
+        cpuunits: "{{ hostvars[item]['cpuunits']|default(1024) }}"
+        memory: "{{ hostvars[item]['memory']|default(512) }}"
+        onboot: "{{ hostvars[item]['onboot']|default(false) }}"
+        disk: "{{ hostvars[item]['disk']|default(3) }}"
+        nameserver: "{{ hostvars[item]['nameserver']|default() }}"
+        netif: "{{ hostvars[item]['netif']|default() }}"
+        swap: "{{ hostvars[item]['swap']|default(512) }}"
+        mounts: "{{ hostvars[item]['mounts']|default({}) }}"
+        state: 'present'
+      with_items: "{{ groups ['ctsprod'] }} "
+      loop_control:
+        pause: 1
+      register: 'created_ct'
+
+    - meta: 'flush_handlers'
+      when: 'created_ct.changed'
+
+
+    - name: 'start containers'
+      proxmox:
+        api_host: 192.168.10.5
+        api_user: "{{ vault_proxmox_api_user }}"
+        api_password: "{{ vault_proxmox_api_password }}"
+        vmid: "{{ item.invocation.module_args.vmid }}"
+        state: 'started'
+      with_items: "{{ created_ct.results}}"
+      when: 'item.changed'
+
+    - name: 'register variable'
+      add_host:
+        name: "DUMMY_HOST"
+        created_ct: "{{ created_ct }}"
+
+- name: 'FreeIPA Provision'
+  hosts: proxmox
+  vars_files:
+    - passwd.yml
+  tasks:
+
+    - name: "Set Nesting"
+      command: pct set {{ item.invocation.module_args.vmid }} --features nesting=1
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed'
+
+    - name: "Set Boot Order"
+      command: pct set {{ item.invocation.module_args.vmid }} --startup order="{{ hostvars[item.item]['startorder'] }}"
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: ('item.changed') and (hostvars[item.item]['startorder']  is defined)
+
+    # - name: "Set CPU limit to unlimited"
+    #   command: pct set {{item.invocation.module_args.vmid }} --cpulimit=0
+    #   become: true
+    #   with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+    #   when: 'item.changed'
+
+    # - name: "Start CTs"
+    #   command: pct start {{item.invocation.module_args.vmid }}
+    #   become: true
+    #   with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+    #   when: 'item.changed'
+
+    - name: "Set timezone"
+      command: pct exec {{ item.invocation.module_args.vmid }} -- bash -c "ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime"
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed'
+
+    - name: "Set locale"
+      command: pct exec {{ item.invocation.module_args.vmid }} -- bash -c "echo LANG=C.UTF-8 > /etc/default/locale"
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed'
+
+    - name: "Add Apt Backports"
+      command: pct exec {{item.invocation.module_args.vmid }} -- bash -c "echo 'deb http://deb.debian.org/debian bullseye-backports main' | tee -a /etc/apt/sources.list"
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed'
+
+    - name: "Update APT"
+      command: pct exec {{ item.invocation.module_args.vmid }} -- bash -c "apt update && apt upgrade -y && apt autoremove -y"
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed'
+
+    # Have to add locales because with out it, Debian 11 CTs will refuse to reboot
+    - name: "Install Prerequisites"
+      command: pct exec {{ item.invocation.module_args.vmid }} -- bash -c "apt install -y locales openssh-server freeipa-client sudo"
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed'
+
+    - name: "Configure IPA"
+      command: pct exec {{ item.invocation.module_args.vmid }} -- bash -c "ipa-client-install -U -N --domain={{ ipa_domain_name }} --mkhomedir -w {{ ipa_password }} -p {{ ipa_user }}"
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed' 
+
+    - name: "Reboot LXC"
+      command: pct reboot {{ item.invocation.module_args.vmid }} --timeout 20
+      become: true
+      with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
+      when: 'item.changed'

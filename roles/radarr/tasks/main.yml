@@ -1,0 +1,66 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - apt-transport-https
+      - dirmngr 
+      - gnupg
+      - ca-certificates
+      - mediainfo
+      - sqlite3
+    state: present
+    update_cache: true      
+
+- name: Clone Radarr git repo
+  git: repo='https://github.com/Radarr/Radarr.git' dest=/opt/Radarr clone=yes update=yes
+  ignore_errors: yes
+
+- name: create radarr group
+  group:
+    name: radarr
+    state: present
+    local: yes
+
+- name: Create radarr user
+  user:
+    name: radarr
+    group: radarr
+    create_home: no
+    system: yes
+    state: present
+    local: yes
+
+
+- name: Change radarr exec directory permissions
+  file:
+    path: /opt/Radarr
+    state: directory
+    recurse: yes
+    owner: radarr
+    group: radarr
+    mode: '755'
+
+- name: Change radarr data directory permissions
+  file:
+    path: /lxc-directory
+    state: directory
+    recurse: yes
+    owner: radarr
+    group: radarr
+    mode: '755'
+
+#- name: copy systemd file
+#  template:
+#    src: tautulliservice.j2
+#    dest: /lib/systemd/system/tautulli.service
+#    owner: root
+#    group: root
+#    mode: '755'
+
+#- name: Reload Systemd
+#  systemd:
+#    name: tautulli.service
+#    state: started
+#    daemon_reload: yes
+#    enabled: yes
+    

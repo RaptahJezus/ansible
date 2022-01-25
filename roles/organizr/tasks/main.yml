@@ -1,0 +1,53 @@
+- name: "Install Packages"
+  apt:
+    name:
+      - git
+      - nginx
+      - php7.3
+      - sqlite
+      - php7.3-mbstring
+      - php7.3-xml
+      - php7.3-common
+      - php7.3-sqlite3
+      - php7.3-zip
+      - php7.3-curl
+      - php7.3-fpm
+    state: present
+    update_cache: true      
+  become: true
+  become_method: sudo
+
+
+- name: Clone Organizr git repo
+  git: repo='https://github.com/causefx/Organizr.git' dest=/var/www/html/Organizr clone=yes update=yes
+  become: true
+  become_method: sudo
+  ignore_errors: yes
+
+- name: Set /var/www/html/Organizr permissions
+  file:
+    path: /var/www/html/Organizr
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
+    mode: '755'
+  become: true
+  become_method: sudo
+
+- name: Copy nginx default config
+  template:
+    src: default.j2
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    mode: 0600
+  become: true
+  become_method: sudo
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+  become: true
+  become_method: sudo

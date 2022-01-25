@@ -1,0 +1,9 @@
+--- 
+  postfix_relayhost: smtp.gmail.com
+  postfix_relayhost_port: 587
+  postfix_sasl_auth_enable: true
+  postfix_sasl_security_options: noanonymous
+  postfix_relaytls: true
+  postfix_sasl_user: DanBlazejewskiServerHealth@gmail.com
+  postfix_sasl_password: voF1wzayRffq
+  postfix_cacert_pem: "{{ vault_postfix_cacert_pem }}"

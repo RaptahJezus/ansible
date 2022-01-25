@@ -1,0 +1,42 @@
+---
+- name: Download Debian Image
+  command: "pveam download local debian-10.0-standard_10.0-1_amd64.tar.gz"
+  args:
+    creates: "/var/lib/vz/template/cache/debian-10.0-standard_10.0-1_amd64.tar.gz"
+  become: yes
+
+- name: Create Container
+  command: >
+    pct create "{{ vmid }}" /var/lib/vz/template/cache/debian-10.0-standard_10.0-1_amd64.tar.gz
+        -cores "{{ cores }}"
+        -storage local
+        -hostname "{{ hostname }}"
+        -net0 name=eth0,bridge=vmbr0,ip=dhcp,tag=20
+        -onboot 1
+        -memory "{{ memory }}"
+        -swap 512
+        -rootfs ZFS-vmstore:4
+        {{ extra_opts|default() }}
+  args:
+    creates: "/etc/pve/lxc/{{ vmid }}.conf"
+  become: yes
+
+- name: Start Container
+  shell: "{ pct status {{ vmid }} | grep running ; } || pct start {{ vmid }}"
+  become: yes
+  args:
+   executable: /bin/bash
+
+- name: Update APT
+  command: pct exec {{ vmid }} -- bash -c "apt update && apt upgrade -y && apt autoremove -y"
+  become: true
+
+- name: Install necessary packages
+  command: pct exec {{ vmid }} -- bash -c "apt install -y openssh-server freeipa-client sudo"
+  become: true
+
+- name: Configure IPA
+  command: pct exec {{ vmid }} -- bash -c "ipa-client-install -U -N --domain={{ ipa_domain }} --mkhomedir -w {{ ipa_pass }} -p {{ ipa_username }}"
+  become: true
+
+

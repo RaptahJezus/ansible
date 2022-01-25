@@ -1,0 +1,45 @@
+---
+
+- name: install prerequisites
+  become: true
+  apt:
+    name:
+      - git
+      - stow
+    state: present
+
+- name: clone dotfile repo
+  remote_user: dan
+  become: no
+  git:
+    repo: https://github.com/raptahjezus/dotfiles
+    dest: /home/dan/.dotfiles
+
+- name: symlink .bashrc
+  remote_user: dan
+  become: no
+  file:
+    src: /home/dan/.dotfiles/bash/.bashrc
+    dest: /home/dan/.bashrc
+    state: link
+    force: yes
+
+- name: symlink .tmux.conf
+  remote_user: dan
+  become: no 
+  file:
+    src: /home/dan/.dotfiles/tmux/.tmux.conf
+    dest: /home/dan/.tmux.conf
+    state: link
+    force: yes
+
+- name: symlink .gitconfig
+  remote_user: dan
+  become: no 
+  file:
+    src: /home/dan/.dotfiles/git/.gitconfig
+    dest: /home/dan/.gitconfig
+    state: link
+    force: yes
+
+

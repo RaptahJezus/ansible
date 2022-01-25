@@ -1,0 +1,63 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - git-core
+      - python3.7
+      - libuser
+    state: present
+    update_cache: true      
+
+- name: Clone Tautulli git repo
+  git: repo='https://github.com/Tautulli/Tautulli.git' dest=/opt/Tautulli clone=yes update=yes
+  ignore_errors: yes
+
+- name: create tautulli group
+  group:
+    name: tautulli
+    state: present
+    local: yes
+
+- name: Create tautulli user
+  user:
+    name: tautulli
+    group: tautulli
+    create_home: no
+    system: yes
+    state: present
+    local: yes
+
+
+- name: Change tautulli exec directory permissions
+  file:
+    path: /opt/Tautulli
+    state: directory
+    recurse: yes
+    owner: tautulli
+    group: tautulli
+    mode: '755'
+
+- name: Change tautulli data directory permissions
+  file:
+    path: /lxc-directory
+    state: directory
+    recurse: yes
+    owner: tautulli
+    group: tautulli
+    mode: '755'
+
+- name: copy systemd file
+  template:
+    src: tautulliservice.j2
+    dest: /lib/systemd/system/tautulli.service
+    owner: root
+    group: root
+    mode: '755'
+
+- name: Reload Systemd
+  systemd:
+    name: tautulli.service
+    state: started
+    daemon_reload: yes
+    enabled: yes
+    

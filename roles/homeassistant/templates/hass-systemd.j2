@@ -1,0 +1,15 @@
+# Ansible Managed
+
+[Unit]
+Description=Home Assistant
+After=network-online.target mosquitto.service
+
+[Service]
+Type=simple
+User=dan
+Restart=on-failure
+RestartSec=60s
+ExecStart=/srv/homeassistant/bin/python /srv/homeassistant/bin/hass -c "/lxc-data/homeassistant"
+
+[Install]
+WantedBy=multi-user.target

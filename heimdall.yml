@@ -1,0 +1,70 @@
+---
+- name: 'Install Heimdall'
+  hosts: 'dev-newct2'
+  remote_user: ansible
+  vars:
+    ansible_ssh_private_key_file: /home/dan/ansible/ansible-ipa-openssh
+    ansible_become_pass: Nxib4brUgyCrK31yXr231
+
+  tasks:
+    - name: "Install Packages"
+      apt:
+        name:
+          - git
+          - apache2
+          - php7.3
+          - libapache2-mod-php7.3
+          - sqlite
+          - php7.3-mbstring
+          - php7.3-xml
+          - php7.3-common
+          - php7.3-sqlite3
+          - php7.3-zip
+        state: present
+        update_cache: true      
+      become: true
+      become_method: sudo
+
+    - name: "Enable apache rewrite module"
+      apache2_module:
+        state: present
+        name: rewrite
+      become: true
+      become_method: sudo
+
+    - name: Clone Heimdall git repo
+      git: repo='https://github.com/linuxserver/Heimdall' dest=/opt/heimdall clone=yes update=yes
+      become: true
+      become_method: sudo
+      ignore_errors: yes
+
+    - name: Set /opt/heimdall permissions
+      file:
+        path: /opt/heimdall
+        state: directory
+        recurse: yes
+        owner: www-data
+        group: www-data
+        mode: '755'
+      become: true
+      become_method: sudo
+
+    - name: Create symlink
+      file:
+        dest: /var/www/html
+        src: /opt/heimdall/
+        owner: www-data
+        group: www-data
+        state: link
+        force: yes
+      become: true
+      become_method: sudo
+
+    - name: Copy env file
+      file:
+        src: /opt/heimdall/.env.example
+        dest: /opt/heimdall/.env
+        owner: www-data
+        group: www-data
+      become: true
+      become_method: sudo
