@@ -20,6 +20,34 @@
     src: node-red.service.j2
     dest: "/etc/systemd/system/node-red.service"
 
+- name: "Install node-red packages"
+  community.general.npm:
+    name: "{{ item }}"
+    path: /lxc-data/node-red
+  loop:
+    - node-red-contrib-bigtimer
+    - node-red-contrib-home-assistant-websocket
+    - node-red-dashboard
+    - node-red-node-base64
+    - node-red-contrib-traffic
+    - node-red-contrib-broadlink
+    - node-red-contrib-cast
+    - node-red-contrib-counter
+    - node-red-contrib-merge-topic
+    - node-red-contrib-looptimer
+    - node-red-contrib-stoptimer
+    - node-red-contrib-weekday
+    - node-red-contrib-time-range-switch
+    - node-red-contrib-telegrambot
+    - node-red-node-random
+    - node-red-contrib-google
+    - node-red-contrib-zigbee2mqtt
+    - node-red-node-tail
+    - node-red-node-pushbullet
+    - node-red-node-email
+    - node-red-contrib-moment
+
+
 - name: "Enable and start node-red"
   ansible.builtin.systemd:
     name: node-red

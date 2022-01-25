@@ -39,3 +39,8 @@
   when: postfix_relayhost != false
   notify:
     - restart postfix
+
+- name: Delete plaintext sasl_passwd
+  ansible.builtin.file:
+    name: /etc/postfix/sasl_passwd
+    state: absent
