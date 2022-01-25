@@ -44,6 +44,12 @@
     virtualenv: /srv/homeassistant
     virtualenv_python: python3.9
 
+- name: Pip install pymysql
+  pip:
+    name: pymysql
+    virtualenv: /srv/homeassistant
+    virtualenv_python: python3.9
+
 - name: Create HomeAssistant config directory
   ansible.builtin.file:
     path: /lxc-data/homeassistant
