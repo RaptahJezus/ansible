@@ -28,6 +28,7 @@
         swap: "{{ hostvars[item]['swap']|default(512) }}"
         searchdomain: "{{ hostvars[item]['searchdomain']|default('home.danielblazejewski.com') }}"
         mounts: "{{ hostvars[item]['mounts']|default({}) }}"
+        timeout: 120
         state: 'present'
       with_items: "{{ groups ['ctsprod'] }} "
       loop_control:
@@ -70,18 +71,6 @@
       become: true
       with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
       when: ('item.changed') and (hostvars[item.item]['startorder']  is defined)
-
-    # - name: "Set CPU limit to unlimited"
-    #   command: pct set {{item.invocation.module_args.vmid }} --cpulimit=0
-    #   become: true
-    #   with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
-    #   when: 'item.changed'
-
-    # - name: "Start CTs"
-    #   command: pct start {{item.invocation.module_args.vmid }}
-    #   become: true
-    #   with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
-    #   when: 'item.changed'
 
     - name: "Set timezone"
       command: pct exec {{ item.invocation.module_args.vmid }} -- bash -c "ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime"
