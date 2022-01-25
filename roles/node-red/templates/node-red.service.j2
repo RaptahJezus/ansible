@@ -1,0 +1,18 @@
+#Managed by Ansible
+
+[Unit]
+Description=Node-RED
+After=syslog.target network.target
+
+[Service]
+User=dan
+Group=dan
+ExecStart=/usr/bin/node-red -u /lxc-data/node-red
+WorkingDirectory=/lxc-data/node-red
+Restart=on-failure
+RestartSec=60s
+KillSignal=SIGINT
+
+
+
+

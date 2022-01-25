@@ -1,6 +1,28 @@
 ---
 
 - name: "install node-red"
-  apt:
-    name:
-      - git
+  community.general.npm:
+    name: node-red
+    state: present
+    global: yes
+    unsafe_perm: yes
+
+- name: "Create node-red data directory"
+  ansible.builtin.file:
+    path: "/lxc-data/node-red"
+    state: directory
+    owner: dan
+    group: dan
+    mode: "0755"
+
+- name: "Copy node-red service file"
+  ansible.builtin.template:
+    src: node-red.service.j2
+    dest: "/etc/systemd/system/node-red.service"
+
+- name: "Enable and start node-red"
+  ansible.builtin.systemd:
+    name: node-red
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
