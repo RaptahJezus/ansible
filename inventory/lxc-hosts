@@ -7,7 +7,7 @@
 
 [proxmox:vars]
 ansible_connection=ssh
-ansible_user="{{ vault_asible_user }}"
+ansible_user="{{ vault_ansible_user }}"
 ansible_ssh_pass="{{ vault_ansible_ssh_pass }}"
 ansible_become_pass='{{ vault_proxmox_become_pass }}'
 
@@ -18,6 +18,7 @@ ipa_user="{{ vault_ipa_user }}"
 ipa_password="{{ vault_ipa_password }}"
 proxmox_api_user='{{ vault_proxmox_api_user }}'
 proxmox_api_password='{{ vault_proxmox_api_password }}'
+
 
 [ctsdev]
 dev-db01    vmid='777'  cores='3'   disk=4  mounts='{"mp0":"/mnt/data/lxc-data/tautulli,mp=/lxc-data"}' netif='{"net0":"name=eth0,gw=192.168.20.1,ip=192.168.20.66/24,bridge=vmbr0,firewall=0,tag=20"}' nameserver='192.168.99.1' searchdomain='home.danielblazejewski.com' onboot=true nesting=1   storage='ZFS-vmstore'   ostemplate='local:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz'
