@@ -12,7 +12,8 @@
 #   - role: dotfiles
 #   - role: unattended-upgrades
 #   - role: homeassistant
-    - role: mosquitto
+#    - role: mosquitto
+    - role: node-red
   vars:
     email: "{{ vault_dan_email }}"
     auto_reboot: false 

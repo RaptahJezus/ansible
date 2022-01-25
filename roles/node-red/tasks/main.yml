@@ -1,0 +1,6 @@
+---
+
+- name: "install node-red"
+  apt:
+    name:
+      - git
