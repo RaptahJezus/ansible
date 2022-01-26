@@ -7,3 +7,8 @@
     
 - name: postmap sasl_passwd
   command: postmap /etc/postfix/sasl_passwd
+
+- name: remove sasl_passwd
+  ansible.builtin.file:
+    name: /etc/postfix/sasl_passwd
+    state: absent

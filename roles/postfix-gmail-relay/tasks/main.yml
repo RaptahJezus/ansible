@@ -27,10 +27,10 @@
   notify:
     - postmap sasl_passwd
     - restart postfix
+    - remove sasl_passwd
     
 - name: Copy cacert.pem
   copy:
-#    src: cacert.pem
     content: "{{ postfix_cacert_pem }}"
     dest: /etc/postfix/cacert.pem
     owner: root
@@ -40,7 +40,3 @@
   notify:
     - restart postfix
 
-- name: Delete plaintext sasl_passwd
-  ansible.builtin.file:
-    name: /etc/postfix/sasl_passwd
-    state: absent
