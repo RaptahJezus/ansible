@@ -1,0 +1,16 @@
+---
+
+- name: Update python venv permissions
+  ansible.builtin.file:
+    path: /srv/homeassistant
+    state: directory
+    recurse: yes
+    owner: dan
+    group: dan
+
+- name: Restart homeassistant
+  systemd:
+    name: hass
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
