@@ -6,6 +6,9 @@
     state: present
     global: yes
     unsafe_perm: yes
+  notify:
+    - Daemon reload
+    - Restart node-red
 
 - name: "Create node-red data directory"
   ansible.builtin.file:
@@ -14,11 +17,9 @@
     owner: dan
     group: dan
     mode: "0755"
-
-- name: "Copy node-red service file"
-  ansible.builtin.template:
-    src: node-red.service.j2
-    dest: "/etc/systemd/system/node-red.service"
+  notify:
+    - Daemon reload
+    - Restart node-red
 
 - name: "Install node-red packages"
   community.general.npm:
@@ -46,11 +47,18 @@
     - node-red-node-pushbullet
     - node-red-node-email
     - node-red-contrib-moment
+  notify:
+    - Restart node-red
+
+- name: "Copy node-red service file"
+  ansible.builtin.template:
+    src: node-red.service.j2
+    dest: "/etc/systemd/system/node-red.service"
+  notify:
+    - Daemon reload
+    - Restart node-red
 
 
-- name: "Enable and start node-red"
-  ansible.builtin.systemd:
-    name: node-red
-    state: restarted
-    daemon_reload: yes
-    enabled: yes
+
+
+

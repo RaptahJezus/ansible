@@ -65,8 +65,6 @@
   notify:
     - Restart homeassistant
 
-
-
 - name: Copy Systemd File
   template:
     src: hass-systemd.j2

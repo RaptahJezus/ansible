@@ -1,0 +1,12 @@
+---
+
+- name: Daemon reload
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: "Restart node-red"
+  ansible.builtin.systemd:
+    name: node-red
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

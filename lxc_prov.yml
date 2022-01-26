@@ -96,7 +96,6 @@
       with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
       when: 'item.changed'
 
-    # Have to add locales because with out it, Debian 11 CTs will refuse to reboot
     - name: "Install Prerequisites"
       command: pct exec {{ item.invocation.module_args.vmid }} -- bash -c "apt install -y locales openssh-server freeipa-client sudo"
       become: true
