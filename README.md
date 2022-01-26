@@ -1,5 +1,3 @@
-Foo
-
 ## Example Code
 ##### Provision New LXCs:
 `ansible-playbook -i inventory lxc_prov.yml --vault-password-file [VAULTPASSWORDFILE]`
