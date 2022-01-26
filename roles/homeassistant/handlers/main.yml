@@ -9,8 +9,15 @@
     group: dan
 
 - name: Restart homeassistant
-  systemd:
+  ansible.builtin.systemd:
     name: hass
     state: restarted
-    enabled: yes
+
+- name: Daemon reload
+  ansible.builtin.systsemd:
     daemon_reload: yes
+
+- name: Enable homeassistant
+  ansible.builtin.systemd:
+    name: hss
+    enabled: yes
