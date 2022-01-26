@@ -14,10 +14,10 @@
     state: restarted
 
 - name: Daemon reload
-  ansible.builtin.systsemd:
+  ansible.builtin.systemd:
     daemon_reload: yes
 
 - name: Enable homeassistant
   ansible.builtin.systemd:
-    name: hss
+    name: hass
     enabled: yes

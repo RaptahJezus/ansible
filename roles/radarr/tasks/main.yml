@@ -8,8 +8,7 @@
       - ca-certificates
       - mediainfo
       - sqlite3
-    state: present
-    update_cache: true      
+    state: present    
 
 - name: Clone Radarr git repo
   git: repo='https://github.com/Radarr/Radarr.git' dest=/opt/Radarr clone=yes update=yes
