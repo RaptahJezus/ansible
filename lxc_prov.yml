@@ -85,7 +85,7 @@
       when: 'item.changed'
 
     - name: "Add Apt Backports"
-      command: pct exec {{item.invocation.module_args.vmid }} -- bash -c "echo 'deb http://deb.debian.org/debian bullseye-backports main' | tee -a /etc/apt/sources.list"
+      command: pct exec {{item.invocation.module_args.vmid }} -- bash -c "grep -qxF 'deb http://deb.debian.org/debian bullseye-backports main' /etc/apt/sources.list || echo 'deb http://deb.debian.org/debian bullseye-backports main' >> /etc/apt/sources.list"
       become: true
       with_items: "{{ hostvars['DUMMY_HOST']['created_ct'].results}}"
       when: 'item.changed'
