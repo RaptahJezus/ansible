@@ -1,0 +1,61 @@
+---
+- name: create data directory
+  ansible.builtin.file:
+    path: /lxc-data/sonarr
+    state: directory
+    owner: dan
+    group: dan
+  
+- name: install sonarr repo key
+  ansible.builtin.apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: 2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
+    state: present
+
+# Note, currently uses buster until bullseye repo gets added
+- name: add sonarr repository
+  ansible.builtin.apt_repository:
+    repo: deb https://apt.sonarr.tv/debian buster main
+    filename: sonarr
+    update_cache: yes
+    state: present
+
+- name: add mono repo key
+  ansible.builtin.apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+    state: present
+
+- name: add mono repository
+  ansible.builtin.apt_repository:
+    repo: deb https://download.mono-project.com/repo/debian stable-buster main
+    filename: mono
+    update_cache: yes
+    state: present
+
+- name: add mediainfo repo key
+  ansible.builtin.apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: C5CDF62C7AE05CC847657390C10E11090EC0E438
+    state: present
+
+- name: add mediainfo repo
+  ansible.builtin.apt_repository:
+    repo: deb https://mediaarea.net/repo/deb/debian/ bullseye main
+    filename: mediainfo
+    state: present
+    update_cache: yes
+
+- name: install sonarr
+  ansible.builtin.apt:
+    name:
+      - sonarr
+    state: present
+    update_cache: true
+  notify: restart sonarr
+
+- name: copy sonarr service file
+  ansible.builtin.template:
+    src: sonarr-service.j2
+    dest: /etc/systemd/system/sonarr.service
+  notify: restart sonarr

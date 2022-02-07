@@ -21,7 +21,7 @@
         cpus: "{{ hostvars[item]['cores']|default(0) }}"
         cpuunits: "{{ hostvars[item]['cpuunits']|default(1024) }}"
         memory: "{{ hostvars[item]['memory']|default(2048) }}"
-        onboot: "{{ hostvars[item]['onboot']|default(false) }}"
+        onboot: "{{ hostvars[item]['onboot']|default(true) }}"
         disk: "{{ hostvars[item]['disk']|default(3) }}"
         nameserver: "{{ hostvars[item]['nameserver']|default('192.168.99.1') }}"
         netif: "{{ hostvars[item]['netif']|default() }}"

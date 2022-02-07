@@ -1,0 +1,22 @@
+############################################
+#                                          #
+#            Managed by Ansible            #
+#                                          #
+############################################
+
+[Unit]
+Description=Sonarr Daemon
+After=network.target
+
+[Service]
+User=dan
+Group=dan
+
+Type=simple
+ExecStart=/usr/bin/mono --debug /usr/lib/sonarr/bin/Sonarr.exe -nobrowser -data=/lxc-data/sonarr
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
