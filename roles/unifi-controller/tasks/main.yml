@@ -1,0 +1,99 @@
+---
+- name: install GPG
+  ansible.builtin.apt:
+    name:
+      - gnupg2
+    state: latest
+    update_cache: yes
+
+- name: add unifi repo key
+  ansible.builtin.apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: 06E85760C0A52C50
+    state: present
+
+- name: add unifi repo
+  ansible.builtin.apt_repository:
+    repo: deb https://www.ui.com/downloads/unifi/debian stable ubiquiti
+    filename: unifi
+    update_cache: yes
+    state: present
+
+# Unifi Controller requires MongoDB: 3.6. Install 3.6 from stretch.
+- name: add mongodb 3.6 repo key
+  ansible.builtin.apt_key:
+    url: https://www.mongodb.org/static/pgp/server-3.6.asc
+    state: present
+
+- name: add mongodb 3.6 repo
+  ansible.builtin.apt_repository:
+    repo: deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/3.6 main
+    filename: mongodb
+    update_cache: yes
+    state: present
+
+- name: add openjdk8 stretch repo
+  ansible.builtin.apt_repository:
+    repo: deb http://deb.debian.org/debian stretch main
+    filename: openjdk-stretch
+    update_cache: yes
+    state: present
+
+- name: install unifi
+  ansible.builtin.apt:
+    name:
+      - mongodb-org
+      - openjdk-8-jre-headless
+      - unifi
+    state: latest
+    update_cache: yes
+  notify: restart unifi
+
+# - name: UFW enable Unifi STUN
+#   community.general.ufw:
+#     to_port: '3478'
+#     proto: udp
+#     rule: allow
+
+# #- name: UFW enable Unifi Device/Controller Communication
+#   community.general.ufw:
+#     to_port: '8080'
+#     proto: tcp
+#     rule: allow
+
+# - name: UFW enable Unifi Webface
+#   community.general.ufw:
+#     to_port: '8443'
+#     proto: tcp
+#     rule: allow
+
+- name: stop unifi
+  ansible.builtin.systemd:
+    name: unifi
+    enabled: yes
+    state: stopped
+  notify: restart unifi
+
+- name: copy unifi data directory
+  ansible.builtin.copy:
+    src: /usr/lib/unifi/data
+    dest: /lxc-data/unifi
+    remote_src: yes
+
+- name: create data symmlink
+  ansible.builtin.file:
+    src: /lxc-data/unifi/data
+    dest: /usr/lib/unifi/data
+    state: link
+
+- name: copy unifi log directory
+  ansible.builtin.copy:
+    src: /usr/lib/unifi/logs
+    dest: /lxc-data/unifi/logs
+    remote_src: yes
+
+- name: create logs symmlink
+  ansible.builtin.file:
+    src: /lxc-data/unifi/logs
+    dest: /usr/lib/unifi/logs
+    state: link
