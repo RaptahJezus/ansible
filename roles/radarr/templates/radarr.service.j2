@@ -1,0 +1,24 @@
+############################################
+#                                          #
+#            Managed by Ansible            #
+#           Do not edit manually           #
+#                                          #
+############################################
+
+
+[Unit]
+Description=Radarr Daemon
+After=syslog.target network.target
+
+[Service]
+User=dan
+Group=dan
+
+Type=simple
+ExecStart=/opt/Radarr/Radarr -nobrowser -data=/lxc-data
+TimeoutStopSec=20
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
