@@ -1,36 +1,87 @@
 ---
-- name: install prerequisites
-  ansible.builtin.apt:
-    name:
-#     - nginx 
-#      - php7.0-fpm 
-      - apache2-utils 
-      - subversion 
-      - git 
-      - screen 
-      - build-essential 
-      - automake 
-      - libtool 
-      - libcppunit-dev 
-#      - libcurl3 
-      - libsigc++-2.0-dev 
-      - curl 
-      - unrar-free 
-      - unzip 
-      - libncurses5-dev 
-      - libfuse-dev 
-      - libcurl4-openssl-dev 
-      - libxml++2.6-dev 
-#      - php7.0-cli 
-#      - php7.0-mbstring 
-      - libssl-dev 
-      - mediainfo
-    state: present
-    update_cache: yes
+# - name: install prerequisites
+#   ansible.builtin.apt:
+#     name:
+# #     - nginx 
+# #      - php7.0-fpm 
+#       - apache2-utils 
+#       - subversion 
+#       - git 
+#       - screen 
+#       - build-essential 
+#       - automake 
+#       - libtool 
+#       - libcppunit-dev 
+# #      - libcurl3 
+#       - libsigc++-2.0-dev 
+#       - curl 
+#       - unrar-free 
+#       - unzip 
+#       - libncurses5-dev 
+#       - libfuse-dev 
+#       - libcurl4-openssl-dev 
+#       - libxml++2.6-dev 
+# #      - php7.0-cli 
+# #      - php7.0-mbstring 
+#       - libssl-dev 
+#       - mediainfo
+#     state: present
+#     update_cache: yes
 
-- name: clone xmlrpc-c git repo
-  ansible.builtin.git:
-    repo: https://github.com/mirror/xmlrpc-c.git
-    dest: /tmp/xmlrpc-c
-    clone: yes
-    update: yes
+- name: check for xmlrpc-c installed
+  command: dpkg-query -W xmlrpc-c
+  register: check_xmlrpc_c_deb
+  failed_when: check_xmlrpc_c_deb.rc > 1
+  changed_when: check_xmlrpc_c_deb.rc == 1
+
+- name: copy xmlrpc-c
+  copy:
+    src: xmlrpc-c_1.39.12-1_amd64.deb
+    dest: /tmp/xmlrpc-c_1.39.12-1_amd64.deb
+  when: check_xmlrpc_c_deb.rc == 1
+
+- name: install xmlrpc-c
+  ansible.builtin.apt:
+    deb: /tmp/xmlrpc-c_1.39.12-1_amd64.deb
+  when: check_xmlrpc_c_deb.rc == 1
+
+- name: check for libtorrent installed
+  command: dpkg-query -W libtorrent
+  register: check_libtorrent_deb
+  failed_when: check_libtorrent_deb.rc > 1
+  changed_when: check_libtorrent_deb.rc == 1
+
+- name: copy libtorrent
+  copy:
+    src: libtorrent_0.13.8-1_amd64.deb
+    dest: /tmp/libtorrent_0.13.8-1_amd64.deb
+  when: check_libtorrent_deb.rc == 1
+
+- name: install libtorrent
+  ansible.builtin.apt:
+    deb: /tmp/libtorrent_0.13.8-1_amd64.deb
+  when: check_libtorrent_deb.rc == 1
+
+- name: check for rtorrent installed
+  command: dpkg-query -W rtorrent
+  register: check_rtorrent_deb
+  failed_when: check_rtorrent_deb.rc > 1
+  changed_when: check_rtorrent_deb.rc == 1
+
+- name: copy rtorrent
+  copy:
+    src: rtorrent_0.9.8-1_amd64.deb
+    dest: /tmp/rtorrent_0.9.8-1_amd64.deb
+  when: check_rtorrent_deb.rc == 1
+
+- name: install rtorrent
+  ansible.builtin.apt:
+    deb: /tmp/rtorrent_0.9.8-1_amd64.deb
+  when: check_rtorrent_deb.rc == 1
+
+- name: transfer rtorrent.rc
+  ansible.builtin.template:
+    src: rtorrent.rc.j2
+    dest: /home/dan/.rtorrent.rc
+    owner: dan
+    group: dan

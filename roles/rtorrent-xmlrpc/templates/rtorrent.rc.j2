@@ -1,0 +1,46 @@
+############################################
+#                                          #
+#            Managed by Ansible            #
+#           Do not edit manually           #
+#                                          #
+############################################
+
+min_peers = 40
+max_peers = 100
+
+min_peers_seed = 25
+max_peers_seed = 60
+
+max_uploads = 50
+
+# 0 = unlimited
+download_rate = 0
+upload_rate = 0
+
+directory = /mnt/data/torrents/working
+session = /home/dan/rtorrent_sess
+
+schedule = watch_directory,5,5,load.start=/mnt/data/torrents/watch*.torrent
+
+# Close torrents when diskspace is low. */
+schedule = low_diskspace,5,60,close_low_diskspace=100M
+
+# Port range to use for listening.
+port_range = 51413-51413
+
+scgi_port = 0.0.0.0:5001
+
+# Check hash for finished torrents. Might be usefull until the bug is
+# fixed that causes lack of diskspace not to be properly reported.
+check_hash = no
+
+encryption = allow_incoming,enable_retry,prefer_plaintext
+dht = disable
+peer_exchange = no
+max_memory_usage = 41943040000
+pieces.memory.max.set = 4096M
+log.open_file = "rtorrent.log",(cat,/tmp/rtorrent.log.,(system.pid))
+log.add_output = "debug", "rtorrent.log"
+
+system.file_allocate.set = yes
+system.file.allocate.set = 1
