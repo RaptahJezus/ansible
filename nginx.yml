@@ -1,5 +1,5 @@
 ---
-- hosts: dev-nginx
+- hosts: nginx
   remote_user: ansible
   become: yes
   become_method: sudo
