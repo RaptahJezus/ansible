@@ -1,0 +1,24 @@
+---
+- name: install samba package
+  ansible.builtin.apt:
+    name:
+      - samba
+    state: present
+
+- name: copy smb.conf
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+  notify:
+    - restart samba
+
+- name: add samba users
+  ansible.builtin.shell:
+    cmd: "printf '{{ item.password }}\n{{ item.password }}\n' | smbpasswd -a {{ item.username }}"
+  register: smbpasswd
+  changed_when: "'Added user' in smbpasswd.stdout"
+  with_items: "{{ samba_users }}"
+  loop_control:
+    label: "{{ item.username }}"
+  notify:
+    - restart samba

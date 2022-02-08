@@ -1,0 +1,61 @@
+---
+- hosts: 'dev-samba'
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  vars_files:
+    - passwd.yml
+  roles:
+    # - role: common
+    # - role: postfix-gmail-relay
+    # - role: ssh-secure
+    # - role: dotfiles
+    # - role: unattended-upgrades
+    - role: samba
+  vars:
+    email: "{{ vault_dan_email }}"
+    auto_reboot: false 
+    auto_reboot_time: '04:30'
+    samba_shares:
+      - name: Torrents
+        comment: 'Torrents Share'
+        path: '/mnt/data/torrents'
+        valid_users: dan
+
+      - name: Dan
+        comment: "Dan's Personal Share"
+        path: '/mnt/data/samba/Dan'
+        valid_users: dan
+
+      - name: Dara
+        comment: "Dara's Personal Share"
+        path: '/mnt/data/samba/Dara'
+        valid_users: dara
+
+      - name: Media
+        comment: "Media Library"
+        path: '/mnt/data/media'
+        valid_users: dan
+
+      - name: Shared
+        comment: "Share Drive"
+        path: '/mnt/data/samba/Shared'
+        valid_users: dan dara
+
+      - name: CCTV
+        comment: "CCTV Footage"
+        path: '/mnt/data/samba/CCTV'
+        valid_users: dan
+
+      - name: netboot
+        comment: "Netboot ISO Files"
+        path: '/mnt/data/netboot'
+        guest_ok: 'yes'
+        public: 'yes'
+        only_guest: 'yes'
+
+    samba_users:
+      - username: 'dan'
+        password: "{{ vault_dan_samba_password }}"
+      - username: 'dara'
+        password: "{{ vault_dara_samba_password }}"
