@@ -1,0 +1,6 @@
+---
+  - name: nginx-revproxy
+    scm: git
+    src: https://github.com/hispanico/ansible-nginx-revproxy
+    version: master
+
