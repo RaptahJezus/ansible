@@ -1,0 +1,7 @@
+---
+- name: restart
+  ansible.builtin.systemd:
+    name: ombi
+    state: restarted
+    enabled: true
+    daemon_reload: true

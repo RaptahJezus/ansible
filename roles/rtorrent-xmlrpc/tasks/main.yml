@@ -1,0 +1,36 @@
+---
+- name: install prerequisites
+  ansible.builtin.apt:
+    name:
+#     - nginx 
+#      - php7.0-fpm 
+      - apache2-utils 
+      - subversion 
+      - git 
+      - screen 
+      - build-essential 
+      - automake 
+      - libtool 
+      - libcppunit-dev 
+#      - libcurl3 
+      - libsigc++-2.0-dev 
+      - curl 
+      - unrar-free 
+      - unzip 
+      - libncurses5-dev 
+      - libfuse-dev 
+      - libcurl4-openssl-dev 
+      - libxml++2.6-dev 
+#      - php7.0-cli 
+#      - php7.0-mbstring 
+      - libssl-dev 
+      - mediainfo
+    state: present
+    update_cache: yes
+
+- name: clone xmlrpc-c git repo
+  ansible.builtin.git:
+    repo: https://github.com/mirror/xmlrpc-c.git
+    dest: /tmp/xmlrpc-c
+    clone: yes
+    update: yes

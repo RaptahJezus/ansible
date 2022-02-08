@@ -1,0 +1,33 @@
+---
+- name: set ombi directory permissions
+  file:
+    path: /lxc-data
+    state: directory
+    owner: "{{ ombi_user }}"
+    group: "{{ ombi_group }}"
+    recurse: yes
+
+- name: add ombi apt repo key
+  ansible.builtin.apt_key:
+    url: https://apt.ombi.app/pub.key
+    state: present
+
+- name: add ombi apt repo
+  ansible.builtin.apt_repository:
+    repo: deb https://apt.ombi.app/master jessie main
+    state: present
+
+- name: install ombi
+  ansible.builtin.apt:
+    name: 
+      - ombi
+    state: present
+    update_cache: true
+  notify: restart
+
+- name: copy ombi systemd2 file
+  template:
+    src: ombi.service.j2
+    dest: /etc/systemd/system/ombi.service
+  notify: restart
+
