@@ -54,7 +54,6 @@
   notify:
    - restart nginx
    - restart phpfpm
-  
 
 - name: link rutorrent site-enabled
   ansible.builtin.file:
@@ -63,6 +62,19 @@
     state: link
     owner: root
     group: root
+  notify:
+   - restart nginx
+
+- name: remove nginx default config
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: remove nginx default config
+  ansible.builtin.file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
 
 - name: create rutorrent web user/password
   community.general.htpasswd:
