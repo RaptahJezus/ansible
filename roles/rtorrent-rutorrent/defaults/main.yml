@@ -1,2 +1,3 @@
 php_version: 7.4
-scgi_port: 6000
+scgi_port: 5000
+rutorrent_version: '3.10'

@@ -6,24 +6,43 @@
       - git
       - python3-pip
       - php7.4-fpm
+      - curl
+      - ffmpeg
     state: present
     update_cache: yes
 
-- name: clone ruTorrent 
-  ansible.builtin.git:
-    repo: https://github.com/Novik/ruTorrent.git
-    dest: /var/www/rutorrent
-    update: no
-  register: git_clone
-
-- name: set rutorrent web permissions
+- name: create rutorrent directory
   ansible.builtin.file:
     path: /var/www/rutorrent
     owner: www-data
     group: www-data
-    recurse: yes
     state: directory
-  when: git_clone.changed
+
+- name: download rutorrent
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: https://github.com/Novik/ruTorrent/archive/refs/tags/v{{rutorrent_version}}.tar.gz
+    dest: /var/www/rutorrent
+    owner: www-data
+    group: www-data
+    extra_opts: [--strip-components=1]
+
+# - name: clone rutorrent
+#   ansible.builtin.git:
+#     repo: https://github.com/Novik/ruTorrent
+#     dest: /var/www/rutorrent
+#     update: no
+#   register: git_rclone
+
+# - name: set rutorrent web permissions
+#   ansible.builtin.file:
+#     path: /var/www/rutorrent
+#     owner: www-data
+#     group: www-data
+#     recurse: yes
+#     state: directory
+#   when: git_rclone.changed
+
 
 - name: copy rutorrent site-available
   ansible.builtin.template:
@@ -31,6 +50,9 @@
     dest: /etc/nginx/sites-available/rutorrent
     owner: root
     group: root
+  notify:
+   - restart nginx
+   - restart phpfpm
 
 - name: link rutorrent site-enabled
   ansible.builtin.file:
@@ -52,3 +74,15 @@
     owner: root
     group: www-data
     mode: 0640
+  notify:
+    - restart nginx
+
+- name: copy rutorrent config
+  ansible.builtin.template:
+    src: rutorrent-config.php.j2
+    dest: /var/www/rutorrent/conf/config.php
+    owner: www-data
+    group: www-data
+  notify:
+    - restart nginx
+    - restart phpfpm

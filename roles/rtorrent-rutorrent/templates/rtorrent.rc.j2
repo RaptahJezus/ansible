@@ -28,7 +28,7 @@ schedule = low_diskspace,5,60,close_low_diskspace=100M
 # Port range to use for listening.
 port_range = 51413-51413
 
-network.scgi.open_port = "127.0.0.1:6000"
+network.scgi.open_port = "127.0.0.1:{{ scgi_port}}"
 
 # Check hash for finished torrents. Might be usefull until the bug is
 # fixed that causes lack of diskspace not to be properly reported.

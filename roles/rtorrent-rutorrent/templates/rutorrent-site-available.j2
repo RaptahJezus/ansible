@@ -9,7 +9,7 @@ server {
   listen 80;
   server_name localhost;
 
-  root /var/www/ruTorrent;
+  root /var/www/rutorrent;
   index index.html index.htm index.php;
 
   auth_basic "Restricted";
@@ -21,7 +21,7 @@ server {
 
   location /RPC2 {
     include /etc/nginx/scgi_params;
-    scgi_pass 127.0.0.1:5000;
+    scgi_pass 127.0.0.1:{{scgi_port}};
   }
 
   location ~ .php$ {
