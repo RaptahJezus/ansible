@@ -27,14 +27,13 @@
   changed_when: no 
   failed_when: no
 
-
 - name: create rutorrent directory
   ansible.builtin.file:
     path: /var/www/rutorrent
     owner: www-data
     group: www-data
     state: directory
-  when: rutorrent_ver.rc == 1
+  when: rutorrent_ver.rc != 0
 
 - name: download rutorrent
   ansible.builtin.unarchive:
@@ -44,7 +43,7 @@
     owner: www-data
     group: www-data
     extra_opts: [--strip-components=1]
-  when: rutorrent_ver.rc == 1
+  when: rutorrent_ver.rc != 0
 
 - name: copy rutorrent site-available
   ansible.builtin.template:
