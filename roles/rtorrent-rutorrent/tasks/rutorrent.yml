@@ -8,8 +8,25 @@
       - php7.4-fpm
       - curl
       - ffmpeg
+      - mediainfo
+      - unrar-free
+      - sox
     state: present
     update_cache: yes
+
+- name: install python modules
+  ansible.builtin.pip:
+    name:
+      - passlib>=1.6
+
+- name: "check rutorrent version"
+  command: grep -Fq {{rutorrent_version}} /var/www/rutorrent/js/webui.js
+  register: rutorrent_ver
+  check_mode: no 
+  ignore_errors: yes 
+  changed_when: no 
+  failed_when: no
+
 
 - name: create rutorrent directory
   ansible.builtin.file:
@@ -17,6 +34,7 @@
     owner: www-data
     group: www-data
     state: directory
+  when: rutorrent_ver.rc == 1
 
 - name: download rutorrent
   ansible.builtin.unarchive:
@@ -26,23 +44,7 @@
     owner: www-data
     group: www-data
     extra_opts: [--strip-components=1]
-
-# - name: clone rutorrent
-#   ansible.builtin.git:
-#     repo: https://github.com/Novik/ruTorrent
-#     dest: /var/www/rutorrent
-#     update: no
-#   register: git_rclone
-
-# - name: set rutorrent web permissions
-#   ansible.builtin.file:
-#     path: /var/www/rutorrent
-#     owner: www-data
-#     group: www-data
-#     recurse: yes
-#     state: directory
-#   when: git_rclone.changed
-
+  when: rutorrent_ver.rc == 1
 
 - name: copy rutorrent site-available
   ansible.builtin.template:
@@ -53,6 +55,7 @@
   notify:
    - restart nginx
    - restart phpfpm
+  
 
 - name: link rutorrent site-enabled
   ansible.builtin.file:
@@ -61,10 +64,6 @@
     state: link
     owner: root
     group: root
-
-- name: install passlib module
-  ansible.builtin.pip:
-    name: passlib>=1.6
 
 - name: create rutorrent web user/password
   community.general.htpasswd:
