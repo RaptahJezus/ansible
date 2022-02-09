@@ -1,0 +1,54 @@
+---
+- name: install prerequisites
+  ansible.builtin.apt:
+    name:
+      - nginx 
+      - git
+      - python3-pip
+      - php7.4-fpm
+    state: present
+    update_cache: yes
+
+- name: clone ruTorrent 
+  ansible.builtin.git:
+    repo: https://github.com/Novik/ruTorrent.git
+    dest: /var/www/rutorrent
+    update: no
+  register: git_clone
+
+- name: set rutorrent web permissions
+  ansible.builtin.file:
+    path: /var/www/rutorrent
+    owner: www-data
+    group: www-data
+    recurse: yes
+    state: directory
+  when: git_clone.changed
+
+- name: copy rutorrent site-available
+  ansible.builtin.template:
+    src: rutorrent-site-available.j2
+    dest: /etc/nginx/sites-available/rutorrent
+    owner: root
+    group: root
+
+- name: link rutorrent site-enabled
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/rutorrent
+    dest: /etc/nginx/sites-enabled/rutorrent
+    state: link
+    owner: root
+    group: root
+
+- name: install passlib module
+  ansible.builtin.pip:
+    name: passlib>=1.6
+
+- name: create rutorrent web user/password
+  community.general.htpasswd:
+    path: /etc/nginx/.htpasswd
+    name: "{{ vault_rutorrent_web_user }}"
+    password: "{{ vault_rutorrent_web_password }}"
+    owner: root
+    group: www-data
+    mode: 0640

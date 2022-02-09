@@ -26,7 +26,7 @@ proxmox_api_password='{{ vault_proxmox_api_password }}'
 #dev-vscode  vmid='654'    cores='2'  disk=4  netif='{"net0":"name=eth0,gw=192.168.20.1,ip=192.168.20.26/24,bridge=vmbr0,firewall=0,tag=20"}' nameserver='192.168.99.1' searchdomain='home.danielblazejewski.com' onboot=true nesting=1   storage='ZFS-vmstore'   ostemplate='local:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz'
 #dev-radarr      vmid='779'  cores='2'   disk=4      memory=4096     startorder=10   netif='{"net0":"name=eth0,gw=192.168.20.1,ip=192.168.20.61/24,bridge=vmbr0,firewall=0,tag=20"}' mounts='{"mp0":"/mnt/data/lxc-data/radarr,mp=/lxc-data","mp1":"/mnt/data,mp=/mnt/data"}'   
 #dev-ombi         vmid='791'  cores='2'   disk=4      memory=4096     startorder=10   netif='{"net0":"name=eth0,gw=192.168.20.1,ip=192.168.20.58/24,bridge=vmbr0,firewall=0,tag=20"}' mounts='{"mp0":"/mnt/data/lxc-data/ombi,mp=/lxc-data"}'   
-dev-rtorrent    vmid='792'  cores='4'   disk=5      memory=12000    startorder=10   netif='{"net0":"name=eth0,gw=192.168.20.1,ip=192.168.20.57/24,bridge=vmbr0,firewall=0,tag=20"}' mounts='{"mp0":"/mnt/data,mp=/mnt/data"}'   
+dev-rtorrent    vmid='792'  cores='4'   disk=5      memory=12000    startorder=10   netif='{"net0":"name=eth0,gw=192.168.20.1,ip=192.168.20.57/24,bridge=vmbr0,firewall=0,tag=20"}' mounts='{"mp0":"/mnt/data/lxc-data/rtorrent,mp=/lxc-data","mp1":"/mnt/data,mp=/mnt/data"}'   
 
 
 [ctsprod]

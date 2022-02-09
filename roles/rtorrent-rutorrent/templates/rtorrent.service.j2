@@ -1,0 +1,25 @@
+############################################
+#                                          #
+#            Managed by Ansible            #
+#           Do not edit manually           #
+#                                          #
+############################################
+
+[Unit]
+Description=rTorrent system daemon
+After=network.target
+
+[Service]
+Type=simple
+KillMode=process
+User=dan 
+Group=dan 
+
+ExecStartPre=/bin/rm -f /lxc-data/rtorrent-session/rtorrent.lock
+ExecStart=/usr/bin/rtorrent -o system.daemon.set=true
+
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

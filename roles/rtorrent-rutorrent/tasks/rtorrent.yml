@@ -1,33 +1,3 @@
----
-# - name: install prerequisites
-#   ansible.builtin.apt:
-#     name:
-# #     - nginx 
-# #      - php7.0-fpm 
-#       - apache2-utils 
-#       - subversion 
-#       - git 
-#       - screen 
-#       - build-essential 
-#       - automake 
-#       - libtool 
-#       - libcppunit-dev 
-# #      - libcurl3 
-#       - libsigc++-2.0-dev 
-#       - curl 
-#       - unrar-free 
-#       - unzip 
-#       - libncurses5-dev 
-#       - libfuse-dev 
-#       - libcurl4-openssl-dev 
-#       - libxml++2.6-dev 
-# #      - php7.0-cli 
-# #      - php7.0-mbstring 
-#       - libssl-dev 
-#       - mediainfo
-#     state: present
-#     update_cache: yes
-
 - name: check for xmlrpc-c installed
   command: dpkg-query -W xmlrpc-c
   register: check_xmlrpc_c_deb
@@ -85,3 +55,12 @@
     dest: /home/dan/.rtorrent.rc
     owner: dan
     group: dan
+  notify: restart rtorrent
+
+- name: transfer rtorrent systemd file
+  ansible.builtin.template:
+    src: rtorrent.service.j2
+    dest: /etc/systemd/system/rtorrent.service
+    owner: root
+    group: root
+  notify: restart rtorrent

@@ -1,0 +1,17 @@
+---
+- name: restart rtorrent
+  ansible.builtin.systemd:
+    name: rtorrent
+    state: restarted
+    daemon_reload: true
+    enabled: true
+
+- name: restart nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+
+- name: restart phpfpm
+  ansible.builtin.systemd:
+    name: php{{php_version}}-fpm
+    state: restarted

@@ -1,0 +1,2 @@
+php_version: 7.4
+scgi_port: 6000
