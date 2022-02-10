@@ -1,0 +1,48 @@
+---
+- name: install preqrequisites
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - php{{php_version}}
+      - php{{php_version}}-fpm
+      - php{{php_version}}-xml
+    state: present
+
+- name: ensure directores exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    recurse: yes
+  loop:
+    - /lxc-data/dokuwiki/conf
+    - /lxc-data/dokuwiki/data
+    - /var/www/html/dokuwiki
+  notify: restart nginx
+
+- name: "check dokuwiki version"
+  command: grep -Fq {{ dokuwiki_release_version }} /var/www/html/dokuwiki/VERSION
+  register: dokuwiki_ver
+  check_mode: no 
+  ignore_errors: yes 
+  changed_when: no 
+  failed_when: no
+
+- name: download and install dokuwiki
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: https://download.dokuwiki.org/src/dokuwiki/dokuwiki-{{ dokuwiki_release_version }}.tgz
+    dest: /var/www/html/dokuwiki
+    owner: www-data
+    group: www-data
+    extra_opts: [--strip-components=1]
+  when: dokuwiki_ver.rc != 0
+
+- name: set dokuwiki preload.php
+  ansible.builtin.template:
+    src: preload.php.j2
+    dest: /var/www/html/dokuwiki/inc/preload.php
+    owner: www-data
+    group: www-data
+

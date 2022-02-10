@@ -1,0 +1,20 @@
+---
+- hosts: 'dev-dokuwiki'
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  vars_files:
+    - passwd.yml
+  roles:
+    # - role: common
+    # - role: postfix-gmail-relay
+    # - role: ssh-secure
+    # - role: dotfiles
+    # - role: unattended-upgrades
+    - role: dokuwiki
+  vars:
+    email: "{{ vault_dan_email }}"
+    auto_reboot: false 
+    auto_reboot_time: '04:30'
+
+    dokuwiki_release_version: '2020-07-29'
