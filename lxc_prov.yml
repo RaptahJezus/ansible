@@ -30,7 +30,7 @@
         mounts: "{{ hostvars[item]['mounts']|default({}) }}"
         timeout: 120
         state: 'present'
-      with_items: "{{ groups ['ctsdev'] }} "
+      with_items: "{{ groups ['ctsprod'] }} "
       loop_control:
         pause: 1
       register: 'created_ct'
