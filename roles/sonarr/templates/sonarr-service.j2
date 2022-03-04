@@ -17,6 +17,7 @@ ExecStart=/usr/bin/mono --debug /usr/lib/sonarr/bin/Sonarr.exe -nobrowser -data=
 TimeoutStopSec=20
 KillMode=process
 Restart=on-failure
+RestartSec=30
 
 [Install]
 WantedBy=multi-user.target
