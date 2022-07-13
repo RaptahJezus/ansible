@@ -1,0 +1,31 @@
+#############################################
+##                                          #
+##            Managed by Ansible            #
+##           Do not edit manually           #
+##                                          #
+#############################################
+
+GRAFANA_USER=dan
+
+GRAFANA_GROUP=dan
+
+GRAFANA_HOME=/usr/share/grafana
+
+LOG_DIR=/lxc-data/grafana/log
+
+DATA_DIR=/lxc-data/grafana/data
+
+MAX_OPEN_FILES=10000
+
+CONF_DIR=/lxc-data/grafana/conf
+
+CONF_FILE=/lxc-data/grafana/conf/grafana.ini
+
+RESTART_ON_UPGRADE=true
+
+PLUGINS_DIR=/lxc-data/grafana/data/plugins
+
+PROVISIONING_CFG_DIR=/lxc-data/grafana/provisioning
+
+# Only used on systemd systems
+PID_FILE_DIR=/var/run/grafana
