@@ -7,11 +7,12 @@
     - passwd.yml
   roles:
     - role: common
-    - role: postfix-gmail-relay
-    - role: ssh-secure
-    - role: dotfiles
-    - role: unattended-upgrades
-    - role: radarr
+#    - role: postfix-gmail-relay
+#    - role: ssh-secure
+#    - role: dotfiles
+#    - role: unattended-upgrades
+#    - role: radarr
+    - role: node_exporter
   vars:
     email: "{{ vault_dan_email }}"
     auto_reboot: false 

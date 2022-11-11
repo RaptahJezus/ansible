@@ -1,14 +1,10 @@
 #Postfix handlers
 ---
+    
+- name: postmap sasl_passwd
+  command: postmap /etc/postfix/sasl/sasl_passwd
+
 - name: restart postfix
   service:
     name: postfix
     state: restarted
-    
-- name: postmap sasl_passwd
-  command: postmap /etc/postfix/sasl_passwd
-
-- name: remove sasl_passwd
-  ansible.builtin.file:
-    name: /etc/postfix/sasl_passwd
-    state: absent

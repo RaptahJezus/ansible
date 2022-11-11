@@ -1,5 +1,5 @@
 ---
-- hosts: 'rtorrent'
+- hosts: 'dev-prometheus'
   remote_user: ansible
   become: yes
   become_method: sudo
@@ -11,8 +11,6 @@
     - role: ssh-secure
     - role: dotfiles
     - role: unattended-upgrades
-#    - role: rtorrent-rutorrent
-    - role: node_exporter
   vars:
     email: "{{ vault_dan_email }}"
     auto_reboot: false 

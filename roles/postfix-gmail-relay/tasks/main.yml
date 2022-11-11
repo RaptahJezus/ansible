@@ -18,7 +18,7 @@
 - name: Copy SASL Username/Password
   template:
     src: sasl_passwd.j2
-    dest: /etc/postfix/sasl_passwd
+    dest: /etc/postfix/sasl/sasl_passwd
     owner: root
     group: root
     mode: 0600
@@ -26,7 +26,6 @@
   notify:
     - postmap sasl_passwd
     - restart postfix
-    - remove sasl_passwd
     
 - name: Copy cacert.pem
   copy:
