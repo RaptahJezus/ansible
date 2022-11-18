@@ -7,10 +7,10 @@
   vars_files:
     - passwd.yml
   roles:
-    - role: common
-    - role: postfix-gmail-relay
-    - role: ssh-secure
-    - role: dotfiles
+#    - role: common
+#    - role: postfix-gmail-relay
+#    - role: ssh-secure
+#    - role: dotfiles
 #    - role: unattended-upgrades
     - role: node_exporter
   vars:
