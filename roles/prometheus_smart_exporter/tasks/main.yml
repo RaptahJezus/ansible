@@ -1,0 +1,63 @@
+---
+- name: Install prerequisites
+  apt:
+    name:
+      - python3-dev
+      - python3-pip
+      - pkg-config
+      - libsystemd-dev
+
+- name: Install prometheus_smart_exporter via pip3
+  ansible.builtin.pip:
+    name: prometheus_smart_exporter
+
+- name: Create prometheus smart exporter user
+  user:
+    name: prom_smart_exporter
+    shell: /sbin/nologin
+    state: present
+
+- name: Create /etc/prometheus_smart_exporter
+  file:
+    path: /etc/prometheus_smart_exporter
+    state: directory
+    owner: root
+    group: root
+
+- name: Get device db from github
+  get_url:
+# TODO: Update to point at the most recent version if/when prometheus_smart_exporter ever gets fixed to 
+#    url: https://raw.githubusercontent.com/thomas-krenn/check_smart_attributes/master/check_smartdb.json
+    url: https://raw.githubusercontent.com/thomas-krenn/check_smart_attributes/c83683e1b82f7e173049d2b9a1727432c39e8f86/check_smartdb.json
+    dest: /etc/prometheus_smart_exporter/devices.json
+    owner: root
+    group: root
+
+#- name: Copy the smart_exporter systemd file
+#  template:
+#    src: prometheus_smart_exporter.service.j2
+#    dest: /etc/systemd/system/prometheus_smart_exporter.service
+#    mode: 0644
+#  register: prometheus_smart_exporter_service
+
+#- name: Copy the smart_helper systemd file
+#  template:
+#    src: prometheus_smart_helper.service.j2
+#    dest: /etc/systemd/system/prometheus_smart_helper.service
+#    mode: 0644
+#  register: prometheus_smart_exporter_service
+
+#- name: Copy the smart_helper socket file
+#  template:
+#    src: prometheus_smart_helper.socket.j2
+#    dest: /etc/systemd/system/prometheus_smart_helper.socket
+#    mode: 0644
+#  register: prometheus_smart_exporter_service
+
+
+
+- name: Reload systemd daemon if unit file is changed.
+  systemd:
+    daemon_reload: true
+  notify: restart prometheus_smart_helper
+#  when: prometheus_smart_exporter_service is changed
