@@ -73,6 +73,10 @@ dockerhost-vm
 ansible_ssh_private_key_file='/home/dan/ansible/ansible-ipa-openssh'
 ansible_become_pass="{{ vault_ansible_become_pass }}"
 
+[offsite_servers]
+Greedo              ansible_host=192.168.6.3
+Offsite-HDD01       ansible_host=192.168.6.4
+
 
 #Prometheus stuff
 [prometheus_smart_collectors]
@@ -91,3 +95,12 @@ homeassistant
 Pi-Zigbee-Zwave
 Greedo
 Offsite-HDD01
+
+
+
+
+
+
+[offsite_servers:vars]
+ansible_ssh_private_key_file='/home/dan/ansible/ansible-ipa-openssh'
+ansible_become_pass="{{ vault_ansible_become_pass }}"
