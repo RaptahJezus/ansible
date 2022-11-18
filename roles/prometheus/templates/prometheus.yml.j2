@@ -1,0 +1,233 @@
+# Managed by Ansible
+
+# my global config
+global:
+  scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 5s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+       - localhost:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+   - "alerts.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+    - targets: ['localhost:9090']
+
+  - job_name: 'smartdata'
+    static_configs:
+{% for server in groups.prometheus_smart_collectors %}
+    - targets: [ '{{ server }}:9257' ]
+{% endfor %}
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+# Neaten up label for display in Grafana
+    metric_relabel_configs:
+      - source_labels: [serial]
+        target_label: zfs_pool
+        regex: 'S1DBNSBF773863T'
+        replacement: 'local'
+
+      - source_labels: [serial]
+        target_label: zfs_pool
+        regex: 'S3Z8NY0M443925L'
+        replacement: 'darastore'
+
+      - source_labels: [serial]
+        target_label: zfs_pool
+        regex: '1922E207D27D'
+        replacement: 'plexstore'
+
+      - source_labels: [serial]
+        target_label: zfs_pool
+        regex: 'S3PTNF0JA69840N'
+        replacement: 'vmstore00'
+
+      - source_labels: [serial]
+        target_label: zfs_pool
+        regex: '1922E207D3B7'
+        replacement: 'vmstore01'
+
+
+{% for server in groups.prometheus_zfs_collectors %}
+  - job_name: 'zpool_stats'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['{{ server }}:5252']
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+
+  - job_name: 'zfs_stats'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['{{ server }}:9134']
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+{% endfor %}
+
+  - job_name: 'node'
+    static_configs:
+{% for server in groups.prometheus_node_exporters %}
+    - targets: [ '{{ server}}:9100' ]
+{% endfor %}
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance
+
+    metric_relabel_configs:
+      - source_labels: [serial_number]
+        target_label: zfs_pool
+        regex: 'S1DBNSBF773863T'
+        replacement: 'local'
+
+      - source_labels: [serial_number]
+        target_label: zfs_pool
+        regex: 'S3Z8NY0M443925L'
+        replacement: 'darastore'
+
+      - source_labels: [serial_number]
+        target_label: zfs_pool
+        regex: '1922E207D27D'
+        replacement: 'plexstore'
+
+      - source_labels: [serial_number]
+        target_label: zfs_pool
+        regex: 'S3PTNF0JA69840N'
+        replacement: 'vmstore00'
+
+      - source_labels: [serial_number]
+        target_label: zfs_pool
+        regex: '1922E207D3B7'
+        replacement: 'vmstore01'
+
+  - job_name: 'UPS'
+    static_configs:
+      - targets:
+        - APCUPS01
+    metrics_path: /snmp
+    params:
+      module: [apcups]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9116  # The SNMP exporter's real hostname:port.
+    
+  - job_name: 'pve'
+    static_configs:
+      - targets:
+        - Proxmox
+    metrics_path: /pve
+    params:
+      module: [default]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9221
+    metric_relabel_configs:
+      - target_label: 'friendlyID'
+        source_labels: ['id']
+        replacement: 'FREEIPA'
+        regex: 'lxc/110'
+      
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [icmp]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - 192.168.120.10
+        - 192.168.50.50
+        - 192.168.50.51
+        - 192.168.20.75
+        - Offsite-HDD01
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
+
+  - job_name: 'blackbox_http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - http://192.168.20.75:8123
+        - http://192.168.20.75:1880
+        - https://plexrequests.danielblazejewski.com
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
+
+  - job_name: 'blackbox_tcp'
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+        - danielblazejewski.com:32400
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
+
+
+
+
+
+  - job_name: 'hass'
+    scrape_interval: 15s
+    metrics_path: /api/prometheus
+    bearer_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkNDcxOTZhNzQxYWQ0OThmYTZmMDcwYzliYTlkY2UzNSIsImlhdCI6MTU3ODI0NzMxOSwiZXhwIjoxODkzNjA3MzE5fQ.9SZSBTqNl5-8jp_u_OZsdkyxCHm6AEtWn0pmqSKd0_A'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.20.75:8123']
+
+  - job_name: 'rtorrent_exporter'
+    scrape_interval: 15s
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['127.0.0.1:9135']
+    relabel_configs:
+    - source_labels: [__address__]
+      regex: "([^:]+):\\d+"
+      target_label: instance

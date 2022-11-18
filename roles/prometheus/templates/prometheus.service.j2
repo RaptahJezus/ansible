@@ -1,0 +1,10 @@
+[Unit]
+Description=Prometheus Server
+After=network.target
+
+[Service]
+Type=Simple
+ExecStart=/usr/local/bin/prometheus --config.file=/lxc-data/prometheus/prometheus.yml --storage.tsdb.path=/lxc-data/prometheus/data
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+---
+prometheus_version: 2.40.1
+prometheus_skip_install: true
+prometheus_db_dir: /lxc-data/prometheus/data
