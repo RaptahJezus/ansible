@@ -12,7 +12,8 @@
 #    - role: ssh-secure
 #    - role: dotfiles
 #    - role: unattended-upgrades
-    - role: node_exporter
+#    - role: node_exporter
+    - role: prometheus_smart_exporter
   vars:
     email: "{{ vault_dan_email }}"
     auto_reboot: false 
