@@ -1,3 +1,10 @@
+############################################
+#                                          #
+#            Managed by Ansible            #
+#           Do not edit manually           #
+#                                          #
+############################################
+
 [Unit]
 Description=UNIX Socket for prometheus_smart_helper.service
 
@@ -7,8 +14,8 @@ WantedBy=multi-user.target
 [Socket]
 ListenStream=/var/run/prometheus_smart_helper/ipc
 Accept=true
-SocketUser=prom_smart_exporter
-SocketGroup=prom_smart_exporter
+SocketUser=prometheus
+SocketGroup=prometheus
 SocketMode=0600
 Accept=false
 RuntimeDirectory=prometheus_smart_helper

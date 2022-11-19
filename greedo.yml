@@ -7,13 +7,13 @@
   vars_files:
     - passwd.yml
   roles:
-    - role: common
-    - role: postfix-gmail-relay
-    - role: ssh-secure
-    - role: dotfiles
+#    - role: common
+#    - role: postfix-gmail-relay
+#    - role: ssh-secure
+#    - role: dotfiles
 #    - role: unattended-upgrades
+    - role: prometheus_smart_exporter
   vars:
     email: "{{ vault_dan_email }}"
     auto_reboot: false 
     auto_reboot_time: '04:30'
-#    ansible_host: 192.168.6.3

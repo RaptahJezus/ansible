@@ -1,9 +1,11 @@
 ---
 - name: restart prometheus_smart_helper
-  service:
+  systemd:
     name: "{{ item }}"
     state: restarted
     enabled: yes
+    daemon-reload: yes
   with_items:
+    - prometheus_smart_helper.socket
     - prometheus_smart_helper
     - prometheus_smart_exporter

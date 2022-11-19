@@ -1,3 +1,10 @@
+############################################
+#                                          #
+#            Managed by Ansible            #
+#           Do not edit manually           #
+#                                          #
+############################################
+
 [Unit]
 Description=Helper service to provide S.M.A.R.T. info to prometheus_smart_exporter
 Requires=prometheus_smart_helper.socket
@@ -9,7 +16,8 @@ WantedBy=multi-user.target
 Type=simple
 User=root
 Group=root
-ExecStart=/usr/local/bin/smart_exporter_helper -vv
+ExecStart=/usr/local/bin/smart_exporter_helper -vv {% if prometheus_smart_exporter_ignore is defined %}--ignore {{ prometheus_smart_exporter_ignore }} {% endif %}
+
 PrivateTmp=true
 PrivateDevices=no
 ProtectHome=yes
