@@ -1,0 +1,17 @@
+############################################
+#                                          #
+#            Managed by Ansible            #
+#           Do not edit manually           #
+#                                          #
+############################################
+
+[Unit]
+Description=blackboxExporter
+
+[Service]
+TimeoutStartSec=0
+User=root
+ExecStart={{ blackbox_exporter_bin_path }} --web.listen-address={{ blackbox_exporter_host }}:{{ blackbox_exporter_port }} {{ blackbox_exporter_options }} --config.file=/lxc-data/blackbox_exporter/blackbox.yml
+
+[Install]
+WantedBy=multi-user.target

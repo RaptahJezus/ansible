@@ -1,0 +1,15 @@
+---
+# See available releases: https://github.com/prometheus/blackbox_exporter/releases/
+blackbox_exporter_version: '0.22.0'
+blackbox_exporter_arch: 'amd64'
+blackbox_exporter_download_url: https://github.com/prometheus/blackbox_exporter/releases/download/v{{ blackbox_exporter_version }}/blackbox_exporter-{{ blackbox_exporter_version }}.linux-{{ go_arch }}.tar.gz
+
+blackbox_exporter_bin_path: /usr/local/bin/blackbox_exporter
+
+# Set blackbox_exporter_host to locahost if you wish to expose blackbox_exporter on localhost only.
+blackbox_exporter_host: ''
+blackbox_exporter_port: 9115
+blackbox_exporter_options: ''
+
+blackbox_exporter_state: started
+blackbox_exporter_enabled: true
