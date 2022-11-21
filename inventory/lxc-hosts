@@ -88,14 +88,12 @@ Offsite-HDD01
 Proxmox
 
 [prometheus_node_exporters]
-Promxox
-localhost
-Plex
-homeassistant
-Pi-Zigbee-Zwave
+Proxmox
+#Plex
+#homeassistant
+#Pi-Zigbee-Zwave
 Greedo
-192.168.6.3
-192.168.6.4
+Offsite-HDD01
 
 
 

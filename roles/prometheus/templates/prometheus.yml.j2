@@ -123,40 +123,40 @@ scrape_configs:
         regex: '1922E207D3B7'
         replacement: 'vmstore01'
 
-  - job_name: 'UPS'
-    static_configs:
-      - targets:
-        - APCUPS01
-    metrics_path: /snmp
-    params:
-      module: [apcups]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: 127.0.0.1:9116  # The SNMP exporter's real hostname:port.
+#  - job_name: 'UPS'
+#    static_configs:
+#      - targets:
+#        - APCUPS01
+#    metrics_path: /snmp
+#    params:
+#      module: [apcups]
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        target_label: __param_target
+#      - source_labels: [__param_target]
+#        target_label: instance
+#      - target_label: __address__
+#        replacement: 127.0.0.1:9116  # The SNMP exporter's real hostname:port.
     
-  - job_name: 'pve'
-    static_configs:
-      - targets:
-        - Proxmox
-    metrics_path: /pve
-    params:
-      module: [default]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: 127.0.0.1:9221
-    metric_relabel_configs:
-      - target_label: 'friendlyID'
-        source_labels: ['id']
-        replacement: 'FREEIPA'
-        regex: 'lxc/110'
+#  - job_name: 'pve'
+#    static_configs:
+#      - targets:
+#        - Proxmox
+#    metrics_path: /pve
+#    params:
+#      module: [default]
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        target_label: __param_target
+#      - source_labels: [__param_target]
+#        target_label: instance
+#      - target_label: __address__
+#        replacement: 127.0.0.1:9221
+#    metric_relabel_configs:
+#      - target_label: 'friendlyID'
+#        source_labels: ['id']
+#        replacement: 'FREEIPA'
+#        regex: 'lxc/110'
       
 
   - job_name: 'blackbox'
@@ -216,13 +216,13 @@ scrape_configs:
 
 
 
-  - job_name: 'hass'
-    scrape_interval: 15s
-    metrics_path: /api/prometheus
-    bearer_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkNDcxOTZhNzQxYWQ0OThmYTZmMDcwYzliYTlkY2UzNSIsImlhdCI6MTU3ODI0NzMxOSwiZXhwIjoxODkzNjA3MzE5fQ.9SZSBTqNl5-8jp_u_OZsdkyxCHm6AEtWn0pmqSKd0_A'
-    scheme: http
-    static_configs:
-      - targets: ['192.168.20.75:8123']
+#  - job_name: 'hass'
+#    scrape_interval: 15s
+#    metrics_path: /api/prometheus
+#    bearer_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJkNDcxOTZhNzQxYWQ0OThmYTZmMDcwYzliYTlkY2UzNSIsImlhdCI6MTU3ODI0NzMxOSwiZXhwIjoxODkzNjA3MzE5fQ.9SZSBTqNl5-8jp_u_OZsdkyxCHm6AEtWn0pmqSKd0_A'
+#    scheme: http
+#    static_configs:
+#      - targets: ['192.168.20.75:8123']
 
   - job_name: 'rtorrent_exporter'
     scrape_interval: 15s

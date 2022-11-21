@@ -1,5 +1,6 @@
 ---
-- hosts: dev-prometheus
+- hosts: 'dev-backups02'
+
   remote_user: ansible
   become: yes
   become_method: sudo
@@ -11,10 +12,10 @@
 #    - role: ssh-secure
 #    - role: dotfiles
 #    - role: unattended-upgrades
-    - role: prometheus
-    - role: blackbox_exporter
+    - role: node_exporter
+#    - role: prometheus_smart_exporter
   vars:
     email: "{{ vault_dan_email }}"
     auto_reboot: false 
     auto_reboot_time: '04:30'
-    
+    node_exporter_textfile_collector_dir: '/var/lib/node_exporter/textfile_collector'
