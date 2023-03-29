@@ -8,6 +8,10 @@
     state: present
     update_cache: true      
 
+- name: Set git repo safe directory
+  shell: git config --global --add safe.directory /opt/Tautulli
+
+
 - name: Clone Tautulli git repo
   git: repo='https://github.com/Tautulli/Tautulli.git' dest=/opt/Tautulli clone=yes update=yes
   ignore_errors: yes

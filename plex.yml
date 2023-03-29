@@ -1,5 +1,5 @@
 ---
-- hosts: 'tautulli'
+- hosts: plex
   remote_user: ansible
   become: yes
   become_method: sudo
@@ -11,5 +11,9 @@
     - role: ssh-secure
     - role: dotfiles
     - role: unattended-upgrades
-    - role: tautulli
-
+#    - role: plex
+  vars:
+    email: "{{ vault_dan_email }}"
+    auto_reboot: false 
+    auto_reboot_time: '04:30'
+    

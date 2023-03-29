@@ -8,3 +8,6 @@
 
 ##### Run playbook against specific IP:
 `ansible-playbook -i 192.168.20.71, homeassistant.yml --vault-password-file [VAULTPASSWORDFILE]`
+
+##### Ignore host key checking:
+`export ANSIBLE_HOST_KEY_CHECKING=False`

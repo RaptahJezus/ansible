@@ -1,0 +1,21 @@
+---
+- name: restart
+  ansible.builtin.systemd:
+    name: plexmediaserver
+    state: restarted
+    enabled: true
+    daemon_reload: true
+
+- name: stop
+  ansible.builtin.systemd:
+    name: plexmediaserver
+    state: stopped
+    enabled: true
+    daemon_reload: true
+
+- name: stop
+  ansible.builtin.systemd:
+    name: plexmediaserver
+    state: started
+    enabled: true
+    daemon_reload: true

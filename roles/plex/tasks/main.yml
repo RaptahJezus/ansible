@@ -1,0 +1,63 @@
+---
+- name: Add Plex apt key
+  become: true
+  apt_key:
+    url: 'https://downloads.plex.tv/plex-keys/PlexSign.key'
+    state: 'present'
+
+
+- name: 'Add the Plex repo'
+  become: true
+  apt_repository:
+    repo: 'deb https://downloads.plex.tv/repo/deb public main'
+    state: 'present'
+
+- name: Install PlexMediaServer 
+  apt:
+    name:
+      - plexmediaserver
+    update_cache: true
+  register: aptinstall
+
+- name: Stop plexmediaserver
+  ansible.builtin.systemd:
+    name: plexmediaserver
+    state: stopped
+    enabled: true
+    daemon_reload: true
+  when: aptinstall.changed
+
+- name: Set /lxc-data permissions
+  file:
+    path: /lxc-data
+    state: directory
+    owner: plex
+    group: plex
+    recurse: yes
+
+- name: Test plexmediaserver directory
+  stat:
+    path: /var/lib/plexmediaserver
+  register: test
+
+- name: Delete plexmediaserver directory
+  file:
+    path: /var/lib/plexmediaserver
+    state: absent
+  when: test.stat is defined and test.stat.islnk is false
+
+- name: Symlink Plex data directory to /lxc-data
+  file:
+    src: /lxc-data/Data/plexmediaserver
+    dest: /var/lib/plexmediaserver
+    owner: plex
+    group: plex
+    state: link
+
+- name: Start plexmediaserver
+  ansible.builtin.systemd:
+    name: plexmediaserver
+    state: started
+    enabled: true
+    daemon_reload: true
+
