@@ -13,7 +13,7 @@
 
 
 - name: Clone Tautulli git repo
-  git: repo='https://github.com/Tautulli/Tautulli.git' dest=/opt/Tautulli clone=yes update=yes
+  git: repo='https://github.com/Tautulli/Tautulli.git' dest=/opt/Tautulli clone=yes update=yes force=yes
   ignore_errors: yes
 
 - name: create tautulli group
@@ -61,7 +61,7 @@
 - name: Reload Systemd
   systemd:
     name: tautulli.service
-    state: started
+    state: restarted
     daemon_reload: yes
     enabled: yes
     

@@ -12,4 +12,7 @@
     - role: dotfiles
     - role: unattended-upgrades
     - role: tautulli
-
+  vars:
+    email: "{{ vault_dan_email }}"
+    auto_reboot: false 
+    auto_reboot_time: '04:30'
